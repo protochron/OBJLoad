@@ -1,3 +1,10 @@
+# Takes a .obj file and converts it into C++ OpenGL code.
+# Good for taking objects created in a 3D app and natively rendering it in
+#   OpenGL.
+# Author::  Daniel Norris (mailto:dnorris10@gmail.com)
+# Copyright:: Copyright (c) 2010 Daniel Norris
+# License:: GPLv3 
+
 require File.join(File.expand_path(File.dirname(__FILE__) + '/lib/objectLoader'))
 require 'optparse'
 
@@ -41,14 +48,3 @@ ob = ObjectLib::ObjectLoader.new(file)
 p "Vertices: #{ob.numVertices}, Faces: #{ob.numFaces} Matfle: #{ob.matfile}"if options[:verbose]
 
 ob.output(options[:output]) if options[:output]
-
-#ARGV.each do |file|
-#    ob = ObjectLib::ObjectLoader.new(file)
-
- #   if options[:verbose]
- #       p "Vertices: #{ob.numVertices}, Faces: #{ob.numFaces} Matfle: #{ob.matfile}"
-#    end
-    #ob.output(options[:output]) if options[:output]
- #   options[:output].each {|o| ob.output if options[:output]}
-#end
-

@@ -1,20 +1,20 @@
-###########################################
-# ObjectLoader
-# Class to load .OBJ files and convert
-#   to OpenGL objects in C++
-#
-#   Use: Call from command line
-#       ruby objectLoader filename
-##########################################
+# Class to load .OBJ files and convert to OpenGL objects in C++
+# 
+# Call from command line: ruby objectLoader [options] filename
 
-
-###################
-# Class definition
-###################
+# Module to contain .obj conversion code
 module ObjectLib
+    # Takes a .obj file and converts it into C++ code suitable for embedding directly into an OpenGL C++ app.
+    # Capable of handling:
+    # * Vertex coordinates
+    # * Normals
+    # * Faces
+    # * Texture Coordinates
     class ObjectLoader
+        #Attributes
         attr_accessor :numVertices, :numFaces, :vertices, :faces, :normals, :texCoords, :file, :filename, :matfile, :name
 
+        # Initializer
         def initialize(file)
             #Initialize class variables
             @vertices = []
@@ -58,13 +58,7 @@ module ObjectLib
             end
         end
 
-        #################################
-        # Output
-        # Reads in the .OBJ file, parses
-        #   for coordinates and then
-        #   writes to a C++ .h and .cpp
-        #   file. 
-        #################################
+        # Reads in the .OBJ file, parses for coordinates and then writes to a C++ .h and .cpp file. 
         def output(outFile)
 
             tex = self.texture
@@ -166,11 +160,8 @@ module ObjectLib
             f.puts"}" #end construct function
             f.close
         end
-        ###########################
-        # Parse .OBJ file to figure
-        #  out if there are any UV
-        #  coords.
-        ###########################
+
+        # Parse .OBJ file to figure out if there are any UV coords.
         def texture
             t = 0
             @file.each do |line|

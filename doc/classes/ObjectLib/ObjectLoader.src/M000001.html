@@ -1,0 +1,54 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>new (ObjectLib::ObjectLoader)</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <link rel="stylesheet" href="../../.././rdoc-style.css" type="text/css" media="screen" />
+</head>
+<body class="standalone-code">
+  <pre><span class="ruby-comment cmt"># File lib/objectLoader.rb, line 18</span>
+        <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">initialize</span>(<span class="ruby-identifier">file</span>)
+            <span class="ruby-comment cmt">#Initialize class variables</span>
+            <span class="ruby-ivar">@vertices</span> = []
+            <span class="ruby-ivar">@normals</span> = []
+            <span class="ruby-ivar">@faces</span> = []
+            <span class="ruby-ivar">@texCoords</span> = []
+
+            <span class="ruby-ivar">@filename</span> = <span class="ruby-identifier">file</span> <span class="ruby-comment cmt">#store filename in class </span>
+            <span class="ruby-keyword kw">if</span> <span class="ruby-constant">File</span>.<span class="ruby-identifier">exists?</span>(<span class="ruby-ivar">@filename</span>) <span class="ruby-keyword kw">and</span> <span class="ruby-constant">File</span>.<span class="ruby-identifier">readable?</span>(<span class="ruby-ivar">@filename</span>)
+                <span class="ruby-identifier">f</span> = <span class="ruby-constant">File</span>.<span class="ruby-identifier">open</span>(<span class="ruby-ivar">@filename</span>,<span class="ruby-value str">'r+'</span>)
+                <span class="ruby-identifier">data</span> = []; <span class="ruby-comment cmt">#array for storing data</span>
+                <span class="ruby-identifier">f</span>.<span class="ruby-identifier">each_line</span>{<span class="ruby-operator">|</span><span class="ruby-identifier">line</span><span class="ruby-operator">|</span> <span class="ruby-identifier">data</span>.<span class="ruby-identifier">push</span> <span class="ruby-identifier">line</span>} <span class="ruby-comment cmt">#push lines into data aray</span>
+                <span class="ruby-identifier">f</span>.<span class="ruby-identifier">close</span>
+                <span class="ruby-ivar">@file</span> = <span class="ruby-identifier">data</span>
+                <span class="ruby-ivar">@matfile</span> = <span class="ruby-ivar">@file</span>[<span class="ruby-value">1</span>][<span class="ruby-value">7</span><span class="ruby-operator">..</span><span class="ruby-ivar">@file</span>[<span class="ruby-value">1</span>].<span class="ruby-identifier">size</span>].<span class="ruby-identifier">chomp</span>
+                <span class="ruby-identifier">s</span> = <span class="ruby-ivar">@file</span>[<span class="ruby-value">2</span>]
+                <span class="ruby-ivar">@name</span> = <span class="ruby-identifier">s</span>[<span class="ruby-value">2</span><span class="ruby-operator">..</span><span class="ruby-identifier">s</span>.<span class="ruby-identifier">size</span> <span class="ruby-operator">-</span> <span class="ruby-value">1</span>].<span class="ruby-identifier">chomp</span> <span class="ruby-comment cmt">#get object name</span>
+                <span class="ruby-identifier">s</span> = <span class="ruby-ivar">@file</span>[<span class="ruby-value">3</span>] <span class="ruby-comment cmt">#on 4th line of Wings3D file...</span>
+                <span class="ruby-identifier">s1</span> = <span class="ruby-identifier">s</span>[<span class="ruby-value">1</span><span class="ruby-operator">..</span><span class="ruby-identifier">s</span>.<span class="ruby-identifier">size</span> <span class="ruby-operator">-</span> <span class="ruby-value">1</span>].<span class="ruby-identifier">split</span>(<span class="ruby-value str">', '</span>)
+                <span class="ruby-ivar">@numVertices</span> = <span class="ruby-identifier">s1</span>[<span class="ruby-value">0</span>].<span class="ruby-identifier">split</span>(<span class="ruby-value str">' '</span>)[<span class="ruby-value">0</span>].<span class="ruby-identifier">to_i</span>
+                <span class="ruby-ivar">@numFaces</span> = <span class="ruby-identifier">s1</span>[<span class="ruby-value">1</span>].<span class="ruby-identifier">split</span>(<span class="ruby-value str">' '</span>)[<span class="ruby-value">0</span>].<span class="ruby-identifier">to_i</span>
+
+                <span class="ruby-comment cmt">#Read in data</span>
+                <span class="ruby-identifier">data</span> = <span class="ruby-ivar">@file</span>[<span class="ruby-value">4</span><span class="ruby-operator">..</span><span class="ruby-ivar">@file</span>.<span class="ruby-identifier">size</span> <span class="ruby-operator">-</span> <span class="ruby-value">1</span>]
+                <span class="ruby-identifier">data</span>.<span class="ruby-identifier">each</span> <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">line</span><span class="ruby-operator">|</span>
+                    <span class="ruby-identifier">l</span> = <span class="ruby-identifier">line</span>.<span class="ruby-identifier">split</span>(<span class="ruby-value str">' '</span>)
+                    <span class="ruby-identifier">type</span> = <span class="ruby-identifier">l</span>[<span class="ruby-value">0</span>]
+                    <span class="ruby-identifier">l</span> = <span class="ruby-identifier">l</span>[<span class="ruby-value">1</span><span class="ruby-operator">..</span><span class="ruby-identifier">l</span>.<span class="ruby-identifier">size</span> <span class="ruby-operator">-</span> <span class="ruby-value">1</span>]
+                    <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">type</span> <span class="ruby-operator">==</span> <span class="ruby-value str">'v'</span>
+                        <span class="ruby-ivar">@vertices</span>.<span class="ruby-identifier">push</span>(<span class="ruby-identifier">l</span>)
+                    <span class="ruby-keyword kw">elsif</span> <span class="ruby-identifier">type</span> <span class="ruby-operator">==</span> <span class="ruby-value str">'vt'</span>
+                        <span class="ruby-ivar">@texCoords</span>.<span class="ruby-identifier">push</span>(<span class="ruby-identifier">l</span>)
+                    <span class="ruby-keyword kw">elsif</span> <span class="ruby-identifier">type</span> <span class="ruby-operator">==</span> <span class="ruby-value str">'vn'</span>
+                        <span class="ruby-ivar">@normals</span>.<span class="ruby-identifier">push</span>(<span class="ruby-identifier">l</span>)
+                    <span class="ruby-keyword kw">elsif</span> <span class="ruby-identifier">type</span> <span class="ruby-operator">==</span> <span class="ruby-value str">'f'</span>
+                        <span class="ruby-ivar">@faces</span>.<span class="ruby-identifier">push</span>(<span class="ruby-identifier">l</span>)
+                    <span class="ruby-keyword kw">end</span>
+                <span class="ruby-keyword kw">end</span>
+            <span class="ruby-keyword kw">else</span>
+                <span class="ruby-identifier">p</span> <span class="ruby-node">&quot;Error opening or reading #{@filename}&quot;</span>
+            <span class="ruby-keyword kw">end</span>
+        <span class="ruby-keyword kw">end</span></pre>
+</body>
+</html>

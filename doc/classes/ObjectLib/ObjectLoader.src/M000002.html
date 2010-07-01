@@ -1,0 +1,84 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>output (ObjectLib::ObjectLoader)</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <link rel="stylesheet" href="../../.././rdoc-style.css" type="text/css" media="screen" />
+</head>
+<body class="standalone-code">
+  <pre><span class="ruby-comment cmt"># File lib/objectLoader.rb, line 62</span>
+        <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">output</span>(<span class="ruby-identifier">outFile</span>)
+
+            <span class="ruby-identifier">tex</span> = <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">texture</span>
+
+            <span class="ruby-comment cmt">#Write header file</span>
+            <span class="ruby-identifier">f</span> = <span class="ruby-constant">File</span>.<span class="ruby-identifier">new</span>(<span class="ruby-node">&quot;#{outFile}.h&quot;</span>, <span class="ruby-value str">&quot;w+&quot;</span>)
+            <span class="ruby-identifier">f</span>.<span class="ruby-identifier">puts</span> <span class="ruby-node">&quot;//#{outFile}.h&quot;</span>
+            <span class="ruby-identifier">f</span>.<span class="ruby-identifier">puts</span> <span class="ruby-value str">&quot;#include &lt;GL/glut.h&gt;&quot;</span>
+            <span class="ruby-identifier">f</span>.<span class="ruby-identifier">puts</span> <span class="ruby-node">&quot;#ifndef #{outFile.upcase}\n#define #{outFile.upcase}&quot;</span>
+            <span class="ruby-comment cmt">#f.puts &quot;using namespace std;&quot;</span>
+            <span class="ruby-comment cmt">#f.puts &quot;void construct_#{@name}();&quot;</span>
+            <span class="ruby-identifier">f</span>.<span class="ruby-identifier">puts</span> <span class="ruby-node">&quot;void draw_#{@name}();&quot;</span>
+            <span class="ruby-identifier">f</span>.<span class="ruby-identifier">puts</span> <span class="ruby-value str">&quot;#endif&quot;</span>
+            <span class="ruby-identifier">f</span>.<span class="ruby-identifier">close</span>
+
+            <span class="ruby-comment cmt">#cpp file</span>
+            <span class="ruby-identifier">f</span> = <span class="ruby-constant">File</span>.<span class="ruby-identifier">new</span>(<span class="ruby-node">&quot;#{outFile}.cpp&quot;</span>, <span class="ruby-value str">&quot;w+&quot;</span>)
+            <span class="ruby-identifier">f</span>.<span class="ruby-identifier">puts</span> <span class="ruby-node">&quot;#include \&quot;#{outFile}.h\&quot;&quot;</span>
+
+            <span class="ruby-comment cmt">#construct function:</span>
+??
+            <span class="ruby-comment cmt">#Draw function:</span>
+            <span class="ruby-identifier">f</span>.<span class="ruby-identifier">puts</span> <span class="ruby-node">&quot;void draw_#{@name}()\n{&quot;</span>
+            <span class="ruby-identifier">s</span> = <span class="ruby-value str">&quot;&quot;</span>
+            <span class="ruby-ivar">@faces</span>.<span class="ruby-identifier">each</span> <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">fa</span><span class="ruby-operator">|</span>
+                <span class="ruby-identifier">faceSize</span> = <span class="ruby-identifier">fa</span>.<span class="ruby-identifier">size</span>
+                <span class="ruby-identifier">faces</span> = <span class="ruby-identifier">fa</span>
+                <span class="ruby-comment cmt">#determine what type of poly to draw</span>
+                <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">faceSize</span> <span class="ruby-operator">==</span> <span class="ruby-value">4</span>
+                    <span class="ruby-identifier">s</span> <span class="ruby-operator">+=</span> <span class="ruby-value str">&quot;\tglBegin(GL_QUADS);\n&quot;</span> 
+                <span class="ruby-keyword kw">elsif</span> <span class="ruby-identifier">faceSize</span> <span class="ruby-operator">==</span> <span class="ruby-value">3</span>
+                    <span class="ruby-identifier">s</span> <span class="ruby-operator">+=</span> <span class="ruby-value str">&quot;\tglBegin(GL_TRIANGLES);\n&quot;</span>
+                <span class="ruby-keyword kw">else</span>
+                    <span class="ruby-identifier">s</span> <span class="ruby-operator">+=</span> <span class="ruby-value str">&quot;\tglBegin(GL_POLYGON);\n&quot;</span>
+                <span class="ruby-keyword kw">end</span>
+
+                <span class="ruby-comment cmt">#Iterate through faces and write vertex, normal and texture commands</span>
+                <span class="ruby-identifier">faces</span>.<span class="ruby-identifier">each</span> <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">fs</span><span class="ruby-operator">|</span>
+                  <span class="ruby-identifier">face</span> = <span class="ruby-identifier">fs</span>
+                  <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">tex</span> <span class="ruby-operator">!=</span> <span class="ruby-value">0</span>
+                    <span class="ruby-identifier">coords</span> = <span class="ruby-identifier">fs</span>.<span class="ruby-identifier">split</span>(<span class="ruby-value str">&quot;/&quot;</span>)
+                    <span class="ruby-identifier">text</span> = <span class="ruby-ivar">@texCoords</span>[<span class="ruby-identifier">coords</span>[<span class="ruby-value">1</span>].<span class="ruby-identifier">to_i</span> <span class="ruby-operator">-</span> <span class="ruby-value">1</span>]
+                    <span class="ruby-identifier">s</span> <span class="ruby-operator">+=</span> <span class="ruby-value str">&quot;\t\tglTexCoord2f(&quot;</span>
+                    <span class="ruby-identifier">text</span>.<span class="ruby-identifier">each</span>{<span class="ruby-operator">|</span><span class="ruby-identifier">t</span><span class="ruby-operator">|</span> <span class="ruby-identifier">s</span> <span class="ruby-operator">+=</span> <span class="ruby-identifier">t</span>.<span class="ruby-identifier">to_s</span> <span class="ruby-operator">+</span> <span class="ruby-value str">&quot;, &quot;</span>}
+                    <span class="ruby-identifier">s</span> = <span class="ruby-identifier">s</span>[<span class="ruby-value">0</span><span class="ruby-operator">..</span><span class="ruby-identifier">s</span>.<span class="ruby-identifier">size</span> <span class="ruby-operator">-</span> <span class="ruby-value">3</span>] <span class="ruby-operator">+</span> <span class="ruby-value str">&quot;);\n&quot;</span>
+                  <span class="ruby-keyword kw">else</span>
+                      <span class="ruby-identifier">coords</span> = <span class="ruby-identifier">fs</span>.<span class="ruby-identifier">split</span>(<span class="ruby-value str">'//'</span>)
+                  <span class="ruby-keyword kw">end</span>
+
+                  <span class="ruby-comment cmt">#Normals</span>
+                  <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">tex</span> <span class="ruby-operator">==</span> <span class="ruby-value">0</span>
+                      <span class="ruby-identifier">norm</span> = <span class="ruby-ivar">@normals</span>[<span class="ruby-identifier">coords</span>[<span class="ruby-value">1</span>].<span class="ruby-identifier">to_i</span> <span class="ruby-operator">-</span> <span class="ruby-value">1</span>]
+                  <span class="ruby-keyword kw">else</span>
+                      <span class="ruby-identifier">norm</span> = <span class="ruby-ivar">@normals</span>[<span class="ruby-identifier">coords</span>[<span class="ruby-value">2</span>].<span class="ruby-identifier">to_i</span> <span class="ruby-operator">-</span> <span class="ruby-value">1</span>]
+                  <span class="ruby-keyword kw">end</span>
+                  <span class="ruby-identifier">s</span> <span class="ruby-operator">+=</span> <span class="ruby-value str">&quot;\t\tglNormal3f(&quot;</span>
+                  <span class="ruby-identifier">norm</span>.<span class="ruby-identifier">each</span> {<span class="ruby-operator">|</span><span class="ruby-identifier">n</span><span class="ruby-operator">|</span> <span class="ruby-identifier">s</span> <span class="ruby-operator">+=</span> <span class="ruby-identifier">n</span>.<span class="ruby-identifier">to_s</span> <span class="ruby-operator">+</span> <span class="ruby-value str">&quot;, &quot;</span>}
+                  <span class="ruby-identifier">s</span> = <span class="ruby-identifier">s</span>[<span class="ruby-value">0</span><span class="ruby-operator">..</span><span class="ruby-identifier">s</span>.<span class="ruby-identifier">size</span> <span class="ruby-operator">-</span> <span class="ruby-value">3</span>] <span class="ruby-operator">+</span> <span class="ruby-value str">&quot;);\n&quot;</span>                      
+
+                  <span class="ruby-comment cmt">#Vertices</span>
+                  <span class="ruby-identifier">vert</span> = <span class="ruby-ivar">@vertices</span>[<span class="ruby-identifier">coords</span>[<span class="ruby-value">0</span>].<span class="ruby-identifier">to_i</span> <span class="ruby-operator">-</span> <span class="ruby-value">1</span>]
+                  <span class="ruby-identifier">s</span> <span class="ruby-operator">+=</span> <span class="ruby-value str">&quot;\t\tglVertex3f(&quot;</span>
+                  <span class="ruby-identifier">vert</span>.<span class="ruby-identifier">each</span> {<span class="ruby-operator">|</span><span class="ruby-identifier">v</span><span class="ruby-operator">|</span> <span class="ruby-identifier">s</span> <span class="ruby-operator">+=</span> <span class="ruby-identifier">v</span>.<span class="ruby-identifier">to_s</span> <span class="ruby-operator">+</span> <span class="ruby-value str">&quot;, &quot;</span>}
+                  <span class="ruby-identifier">s</span> = <span class="ruby-identifier">s</span>[<span class="ruby-value">0</span><span class="ruby-operator">..</span><span class="ruby-identifier">s</span>.<span class="ruby-identifier">size</span> <span class="ruby-operator">-</span> <span class="ruby-value">3</span>] <span class="ruby-operator">+</span> <span class="ruby-value str">&quot;);\n&quot;</span>
+                <span class="ruby-keyword kw">end</span>
+                <span class="ruby-identifier">s</span> <span class="ruby-operator">+=</span> <span class="ruby-value str">&quot;\tglEnd();\n&quot;</span> <span class="ruby-comment cmt">#end polygon</span>
+            <span class="ruby-keyword kw">end</span>
+            <span class="ruby-identifier">f</span>.<span class="ruby-identifier">puts</span> <span class="ruby-identifier">s</span>
+
+            <span class="ruby-identifier">f</span>.<span class="ruby-identifier">puts</span><span class="ruby-value str">&quot;}&quot;</span> <span class="ruby-comment cmt">#end construct function</span>
+            <span class="ruby-identifier">f</span>.<span class="ruby-identifier">close</span>
+        <span class="ruby-keyword kw">end</span></pre>
+</body>
+</html>
